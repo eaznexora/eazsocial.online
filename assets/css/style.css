@@ -11,7 +11,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; } /* Smooth Scrolling */
+html { scroll-behavior: smooth; }
 
 body {
     font-family: 'Inter', sans-serif;
@@ -20,28 +20,21 @@ body {
     color: var(--text);
     display: flex;
     justify-content: center;
-    /* Animated Background (Optional subtle gradient) */
     background: linear-gradient(135deg, #f3f4f6 0%, #e0e7ff 100%);
     min-height: 100vh;
 }
 
-/* --- ANIMATION KEYFRAMES --- */
+/* --- ANIMATIONS --- */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(40px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .fade-in-up {
     animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Main Card */
+/* Main Container */
 .main-container {
     background: var(--card);
     width: 100%;
@@ -51,14 +44,13 @@ body {
     padding: 40px;
     margin-top: 20px;
     margin-bottom: 40px;
-    transition: transform 0.3s ease;
 }
 
 header { text-align: center; margin-bottom: 30px; }
-header h1 { color: var(--primary); font-size: 28px; margin-bottom: 5px; font-weight: 800; letter-spacing: -0.5px; }
+header h1 { color: var(--primary); font-size: 28px; margin-bottom: 5px; font-weight: 800; }
 header p { font-size: 14px; color: #6b7280; }
 
-/* Photo Upload - Interactive Hover */
+/* Photo Upload */
 .photo-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
 .photo-preview {
     width: 110px; height: 110px;
@@ -73,15 +65,13 @@ header p { font-size: 14px; color: #6b7280; }
 }
 .photo-preview:hover {
     background-color: #dbeafe;
-    transform: scale(1.05) rotate(5deg); /* Slight rotation on hover */
-    box-shadow: 0 8px 15px rgba(37, 99, 235, 0.15);
+    transform: scale(1.05) rotate(5deg);
     border-style: solid;
 }
 .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
-.upload-btn { color: var(--primary); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-.upload-btn:hover { color: var(--primary-dark); text-decoration: underline; }
+.upload-btn { color: var(--primary); font-size: 14px; font-weight: 600; cursor: pointer; }
 
-/* Sections */
+/* Form Sections */
 .form-section {
     margin-bottom: 25px;
     padding-bottom: 20px;
@@ -92,10 +82,10 @@ header p { font-size: 14px; color: #6b7280; }
 .section-title {
     font-size: 15px; color: var(--primary-dark);
     margin-bottom: 15px; display: flex; align-items: center; gap: 10px;
-    font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    font-weight: 700; text-transform: uppercase;
 }
 
-/* Grid & Inputs */
+/* Inputs & Grid */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .full-width { grid-column: span 2; }
 
@@ -105,24 +95,15 @@ header p { font-size: 14px; color: #6b7280; }
     border: 1px solid var(--border);
     border-radius: 10px; font-size: 14px;
     background: #f9fafb;
-    transition: all 0.3s ease; /* Smooth transition for hover */
-}
-
-/* Input Hover & Focus Effects */
-.input-group input:hover, .input-group textarea:hover {
-    background: #fff;
-    border-color: #cbd5e1;
+    transition: all 0.3s ease;
 }
 .input-group input:focus, .input-group textarea:focus {
-    border-color: var(--primary);
-    background: #fff;
-    outline: none;
+    border-color: var(--primary); background: #fff; outline: none;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-    transform: translateY(-2px); /* Thoda upar uthega focus par */
 }
 textarea { resize: vertical; }
 
-/* Button Animation */
+/* Buttons */
 .submit-btn {
     width: 100%; padding: 16px;
     background: var(--primary); color: white;
@@ -130,47 +111,68 @@ textarea { resize: vertical; }
     font-size: 16px; font-weight: 700;
     cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;
     transition: all 0.3s ease;
-    position: relative; overflow: hidden;
 }
 .submit-btn:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
 }
-.submit-btn:active { transform: translateY(0); }
 
-/* Footer Styling */
+/* Footer */
 footer {
     text-align: center; margin-top: 30px;
     font-size: 13px; color: #9ca3af;
     border-top: 1px solid var(--border);
     padding-top: 20px;
 }
-.brand-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 700;
-    position: relative;
-    transition: 0.3s;
-}
-.brand-link:hover {
-    color: var(--primary-dark);
-}
-/* Link Underline Animation */
-.brand-link::after {
-    content: '';
-    position: absolute; width: 0; height: 2px;
-    bottom: -2px; left: 0;
-    background-color: var(--primary-dark);
-    transition: width 0.3s ease-in-out;
-}
-.brand-link:hover::after { width: 100%; }
-
+.brand-link { color: var(--primary); text-decoration: none; font-weight: 700; }
 .divider { margin: 0 5px; opacity: 0.5; }
+
+/* --- POPUP MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active { opacity: 1; visibility: visible; }
+
+.modal-content {
+    background: white; padding: 40px; border-radius: 20px;
+    text-align: center; width: 90%; max-width: 350px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    transform: scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.active .modal-content { transform: scale(1); }
+
+.success-icon {
+    width: 70px; height: 70px; background: #dcfce7; color: #22c55e;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 35px; margin: 0 auto 20px;
+}
+
+.modal-content h2 { color: var(--text); font-size: 22px; margin-bottom: 10px; }
+.modal-content p { color: #6b7280; font-size: 14px; margin-bottom: 25px; }
+
+.close-btn {
+    width: 100%; padding: 12px; background: var(--primary); color: white;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: 0.2s;
+}
+.close-btn:hover { background: var(--primary-dark); }
 
 @media (max-width: 500px) {
     .main-container { padding: 25px; }
     .form-grid { grid-template-columns: 1fr; }
     .full-width { grid-column: span 1; }
-    header h1 { font-size: 24px; }
 }
