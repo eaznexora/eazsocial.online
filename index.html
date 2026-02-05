@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Digital ID | EazSocial</title>
+    <style>
+        :root {
+            --primary: #2563eb; /* Blue Color */
+            --bg: #f3f4f6;
+            --text: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box; /* Important for padding */
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Create Digital ID</h1>
+        <p class="subtitle">Apni details bharein aur VCF file download karein.</p>
+
+        <form id="vcardForm">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" id="fname" placeholder="Ex: Dr. Meraj" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="lname" placeholder="Ex: Ahmad">
+            </div>
+
+            <div class="form-group">
+                <label>Job Title</label>
+                <input type="text" id="title" placeholder="Ex: Physiotherapist">
+            </div>
+
+            <div class="form-group">
+                <label>Company / Clinic Name</label>
+                <input type="text" id="org" placeholder="Ex: Physio Cure">
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="mobile" placeholder="+91 9819XXXXXX" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email ID</label>
+                <input type="email" id="email" placeholder="example@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Website (Optional)</label>
+                <input type="url" id="website" placeholder="https://yourwebsite.com">
+            </div>
+
+            <button type="submit" class="btn">Download My Card</button>
+        </form>
+
+        <div class="footer">
+            Powered by EazSocial
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('vcardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. Values ko get karna
+            const fname = document.getElementById('fname').value;
+            const lname = document.getElementById('lname').value;
+            const fullName = `${fname} ${lname}`;
+            const org = document.getElementById('org').value;
+            const title = document.getElementById('title').value;
+            const mobile = document.getElementById('mobile').value;
+            const email = document.getElementById('email').value;
+            const website = document.getElementById('website').value;
+
+            // 2. VCF Content Format bananana
+            const vcardContent = `BEGIN:VCARD
+VERSION:3.0
+N:${lname};${fname};;;
+FN:${fullName}
+ORG:${org}
+TITLE:${title}
+TEL;TYPE=CELL:${mobile}
+EMAIL;TYPE=INTERNET:${email}
+URL:${website}
+END:VCARD`;
+
+            // 3. Blob banana (Browser memory me file create karna)
+            const blob = new Blob([vcardContent], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+
+            // 4. Download Trigger karna
+            const link = document.createElement('a');
+            link.href = url;
+            // File ka naam: Name.vcf
+            link.download = `${fname.replace(/\s+/g, '_')}_Contact.vcf`; 
+            document.body.appendChild(link);
+            link.click();
+            
+            // 5. Cleanup
+            document.body.removeChild(link);
+        });
+    </script>
+
+</body>
+</html>
