@@ -3,194 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Digital ID with Photo | EazSocial</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f3f4f6;
-            --text: #1f2937;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
-        }
-
-        h1 { text-align: center; color: var(--text); margin-bottom: 10px; }
-        p.subtitle { text-align: center; color: #6b7280; margin-bottom: 30px; }
-
-        .form-group { margin-bottom: 15px; }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #374151;
-            font-size: 14px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: 0.3s;
-        }
-
-        /* File Input Styling */
-        input[type="file"] {
-            background: #f9fafb;
-            padding: 10px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.2s;
-        }
-
-        .btn:hover { background-color: #1d4ed8; }
-        .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #9ca3af; }
-    </style>
+    <title>Eaz Social Digital Card Studio | Create Your ID</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1>Create Digital ID</h1>
-        <p class="subtitle">Details bharein aur Photo ke saath Card download karein.</p>
+    <div class="main-container fade-in-up">
+        <header>
+            <h1><i class="fa-solid fa-id-card-clip"></i> EazSocial</h1>
+            <p>Design your professional digital identity in seconds.</p>
+        </header>
 
-        <form id="vcardForm">
-            <div class="form-group">
-                <label>Profile Photo / Logo (Optional)</label>
-                <input type="file" id="photo" accept="image/png, image/jpeg">
-                <small style="color: #666; font-size: 12px;">Square photo (JPG/PNG) recommended.</small>
-            </div>
-
-            <div class="form-group">
-                <label>First Name</label>
-                <input type="text" id="fname" placeholder="Ex: Dr. Meraj" required>
-            </div>
+        <form id="vcardForm" class="card-form">
             
-            <div class="form-group">
-                <label>Last Name</label>
-                <input type="text" id="lname" placeholder="Ex: Ahmad">
+            <div class="photo-section">
+                <div class="photo-preview" id="photoPreview" title="Click to upload photo">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+                <label for="photoInput" class="upload-btn">Tap to Upload Photo</label>
+                <input type="file" id="photoInput" accept="image/*" hidden>
             </div>
 
-            <div class="form-group">
-                <label>Job Title</label>
-                <input type="text" id="title" placeholder="Ex: Physiotherapist">
+            <div class="form-section">
+                <h3 class="section-title"><i class="fa-solid fa-user"></i> Personal Details</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>First Name *</label>
+                        <input type="text" id="fname" placeholder="e.g. Meraj" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Last Name</label>
+                        <input type="text" id="lname" placeholder="e.g. Ahmad">
+                    </div>
+                    <div class="input-group">
+                        <label>Nickname</label>
+                        <input type="text" id="nickname" placeholder="e.g. Dr. Sahab">
+                    </div>
+                    <div class="input-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="bday">
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Company Name</label>
-                <input type="text" id="org" placeholder="Ex: Physio Cure">
+            <div class="form-section">
+                <h3 class="section-title"><i class="fa-solid fa-phone"></i> Contact Info</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Mobile Number *</label>
+                        <input type="tel" id="mobile" placeholder="+91 9819XXXXXX" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Office Number</label>
+                        <input type="tel" id="work_mobile" placeholder="022 250XXXXX">
+                    </div>
+                    <div class="input-group">
+                        <label>Email ID</label>
+                        <input type="email" id="email" placeholder="email@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Website URL</label>
+                        <input type="url" id="website" placeholder="https://mysite.com">
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Mobile Number</label>
-                <input type="tel" id="mobile" placeholder="+91 9819XXXXXX" required>
+            <div class="form-section">
+                <h3 class="section-title"><i class="fa-solid fa-briefcase"></i> Profession</h3>
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label>Job Title / Designation</label>
+                        <input type="text" id="title" placeholder="e.g. Consultant Physiotherapist">
+                    </div>
+                    <div class="input-group full-width">
+                        <label>Company / Clinic Name</label>
+                        <input type="text" id="org" placeholder="e.g. Physio Cure Clinic">
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Email ID</label>
-                <input type="email" id="email" placeholder="example@gmail.com">
+            <div class="form-section">
+                <h3 class="section-title"><i class="fa-solid fa-map-location-dot"></i> Location</h3>
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label>Street Address</label>
+                        <input type="text" id="street" placeholder="e.g. Shop 4, MG Road">
+                    </div>
+                    <div class="input-group">
+                        <label>City</label>
+                        <input type="text" id="city" placeholder="e.g. Mumbai">
+                    </div>
+                    <div class="input-group">
+                        <label>State</label>
+                        <input type="text" id="state" placeholder="e.g. Maharashtra">
+                    </div>
+                    <div class="input-group">
+                        <label>Zip Code</label>
+                        <input type="text" id="zip" placeholder="e.g. 400071">
+                    </div>
+                    <div class="input-group">
+                        <label>Country</label>
+                        <input type="text" id="country" placeholder="e.g. India" value="India">
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Website</label>
-                <input type="url" id="website" placeholder="https://yourwebsite.com">
+            <div class="form-section">
+                <h3 class="section-title"><i class="fa-solid fa-clipboard"></i> Notes</h3>
+                <div class="input-group full-width">
+                    <textarea id="note" rows="3" placeholder="Add services, timings, or a short bio..."></textarea>
+                </div>
             </div>
 
-            <button type="submit" class="btn">Download My Card</button>
+            <button type="submit" class="submit-btn">
+                <i class="fa-solid fa-download"></i> Generate VCard
+            </button>
+
         </form>
 
-        <div class="footer">Powered by EazSocial</div>
+        <footer>
+            <p>&copy; 2026 Eaz Social Digital cards Solutions</p>
+            <p>
+                Powered by <a href="https://eazsocial.online" target="_blank" class="brand-link">Eaz Social</a> 
+                <span class="divider">|</span> 
+                Secure & Client-Side Generation
+            </p>
+        </footer>
     </div>
 
-    <script>
-        document.getElementById('vcardForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const fname = document.getElementById('fname').value;
-            const lname = document.getElementById('lname').value;
-            const fullName = `${fname} ${lname}`;
-            const org = document.getElementById('org').value;
-            const title = document.getElementById('title').value;
-            const mobile = document.getElementById('mobile').value;
-            const email = document.getElementById('email').value;
-            const website = document.getElementById('website').value;
-            const photoInput = document.getElementById('photo');
-
-            // Function to generate VCF
-            function generateVCF(photoBase64 = '') {
-                let vcardContent = `BEGIN:VCARD
-VERSION:3.0
-N:${lname};${fname};;;
-FN:${fullName}
-ORG:${org}
-TITLE:${title}
-TEL;TYPE=CELL:${mobile}
-EMAIL;TYPE=INTERNET:${email}
-URL:${website}`;
-
-                // Agar photo hai to add karein
-                if (photoBase64) {
-                    vcardContent += `\nPHOTO;ENCODING=b;TYPE=JPEG:${photoBase64}`;
-                }
-
-                vcardContent += `\nEND:VCARD`;
-
-                // File Create & Download
-                const blob = new Blob([vcardContent], { type: 'text/vcard' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `${fname.replace(/\s+/g, '_')}_Contact.vcf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-
-            // Image Processing Logic
-            if (photoInput.files && photoInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Base64 string se header (data:image/jpeg;base64,) hatana padta hai VCF ke liye
-                    const base64String = e.target.result.split(',')[1];
-                    generateVCF(base64String);
-                };
-                reader.readAsDataURL(photoInput.files[0]);
-            } else {
-                // Bina photo ke generate karein
-                generateVCF();
-            }
-        });
-    </script>
-
+    <script src="assets/js/script.js"></script>
 </body>
 </html>
