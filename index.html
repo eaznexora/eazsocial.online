@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eaz Social Digital Card Studio | Create Your ID</title>
+    <title>EazSocial Digital Card Studio | Create Your ID</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -16,7 +16,6 @@
         </header>
 
         <form id="vcardForm" class="card-form">
-            
             <div class="photo-section">
                 <div class="photo-preview" id="photoPreview" title="Click to upload photo">
                     <i class="fa-solid fa-camera"></i>
@@ -125,11 +124,22 @@
         <footer>
             <p>&copy; 2026 Eaz Social Digital cards Solutions</p>
             <p>
-                Powered by <a href="https://eazsocial.online" target="_blank" class="brand-link">Eaz Social</a> 
+                Powered by <a href="https://eazsocial.online" target="_blank" class="brand-link">EazSocial</a> 
                 <span class="divider">|</span> 
                 Secure & Client-Side Generation
             </p>
         </footer>
+    </div>
+
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2>Download Started!</h2>
+            <p>Your digital VCard has been successfully generated.</p>
+            <button id="closeModal" class="close-btn">Create Another</button>
+        </div>
     </div>
 
     <script src="assets/js/script.js"></script>
