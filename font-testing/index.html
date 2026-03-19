@@ -1,0 +1,226 @@
+[20-03-2026 03:29 AM] Eaz Nexora: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Font Comparison</title>
+
+<link href="https://fonts.googleapis.com/css2?
+family=EB+Garamond&
+family=Playfair+Display&
+family=Cormorant+Garamond&
+family=Libre+Baskerville&
+family=Crimson+Text&
+family=Lora&
+family=Gulzar&
+family=Noto+Nastaliq+Urdu&
+family=Noto+Naskh+Arabic&
+display=swap" rel="stylesheet">
+<!-- LOAD ALL FONTS -->
+<link href="https://fonts.googleapis.com/css2?
+family=Noto+Naskh+Arabic&
+family=Noto+Nastaliq+Urdu&
+family=Gulzar&
+family=Lateef&
+family=Scheherazade+New&
+family=Noto+Sans+Arabic&
+display=swap" rel="stylesheet">
+
+<style>
+.section { margin-top:50px; max-width:650px; }
+.title { font-size:14px; opacity:0.6; margin-bottom:10px; }
+
+/* Urdu heading styles */
+.ur-h1 { direction:rtl; font-size:30px; line-height:2; }
+.ur-h2 { direction:rtl; font-size:26px; line-height:2; }
+
+/* Urdu body */
+.ur { direction:rtl; font-size:20px; line-height:2.2; }
+</style>
+
+<style>
+body {
+    background:#f8f5f0;
+    font-size:18px;
+    padding:30px;
+}
+
+.container {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:30px;
+}
+
+.card {
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+.en { margin-bottom:10px; }
+.ur-h { direction:rtl; font-size:26px; line-height:2; }
+.ur { direction:rtl; }
+.title { font-size:14px; opacity:0.6; margin-bottom:10px; }
+</style>
+
+</head>
+
+<body>
+
+<h1>Font Pair Testing</h1>
+
+<div class="section">
+
+<!-- 1 -->
+<div class="title">Noto Nastaliq (Heading) + Noto Naskh (Body)</div>
+<h2 class="ur-h1" style="font-family:'Noto Nastaliq Urdu';">تازہ مضامین</h2>
+<p class="ur" style="font-family:'Noto Naskh Arabic';">
+یہ ایک بہترین امتزاج ہے جو خوبصورتی اور پڑھنے کی آسانی دونوں فراہم کرتا ہے۔
+</p>
+
+<!-- 2 -->
+<div class="title">Gulzar (Heading) + Noto Naskh</div>
+<h2 class="ur-h2" style="font-family:'Gulzar';">جدید تحریریں</h2>
+<p class="ur" style="font-family:'Noto Naskh Arabic';">
+یہ انداز جدید اور صاف ہے جو طویل مضامین کے لیے موزوں ہے۔
+</p>
+
+<!-- 3 -->
+<div class="title">Nastaliq (Heading) + Lateef (Body)</div>
+<h2 class="ur-h1" style="font-family:'Noto Nastaliq Urdu';">کتابی انداز</h2>
+<p class="ur" style="font-family:'Lateef'; font-size:22px;">
+یہ ایک روایتی اردو کتاب جیسا تجربہ فراہم کرتا ہے۔
+</p>
+
+<!-- 4 -->
+<div class="title">Nastaliq (Heading) + Scheherazade</div>
+<h2 class="ur-h1" style="font-family:'Noto Nastaliq Urdu';">ادبی تحریر</h2>
+<p class="ur" style="font-family:'Scheherazade New';">
+یہ فونٹ لمبے مضامین کے لیے بہترین ہے اور بہت صاف محسوس ہوتا ہے۔
+</p>
+
+<!-- 5 -->
+<div class="title">Gulzar (Heading) + Gulzar (Body)</div>
+<h2 class="ur-h2" style="font-family:'Gulzar';">یکساں انداز</h2>
+<p class="ur" style="font-family:'Gulzar';">
+یہ مکمل یکساں اور جدید ڈیزائن فراہم کرتا ہے۔
+</p>
+
+<!-- 6 -->
+<div class="title">Nastaliq (Full Use)</div>
+<h2 class="ur-h1" style="font-family:'Noto Nastaliq Urdu';">خالص نستعلیق</h2>
+<p class="ur" style="font-family:'Noto Nastaliq Urdu'; font-size:22px; line-height:2.4;">
+یہ مکمل نستعلیق انداز ہے جو خوبصورت ہے مگر طویل پڑھنے کے لیے تھوڑا بھاری ہو سکتا ہے۔
+</p>
+
+<!-- 7 -->
+<div class="title">Naskh (Heading + Body)</div>
+<h2 class="ur-h2" style="font-family:'Noto Naskh Arabic';">سادہ انداز</h2>
+<p class="ur" style="font-family:'Noto Naskh Arabic';">
+یہ سب سے زیادہ readable اور safe option ہے۔
+</p>
+
+<!-- 8 -->
+<div class="title">Sans Arabic (Modern)</div>
+<h2 class="ur-h2" style="font-family:'Noto Sans Arabic';">جدید انداز</h2>
+<p class="ur" style="font-family:'Noto Sans Arabic';">
+یہ ایک صاف اور جدید فونٹ ہے جو minimal UI کے لیے مناسب ہے۔
+</p>
+
+</div>
+
+<div class="container">
+
+<!-- 1 -->
+<div class="card">
+<div class="title">EB Garamond + Nastaliq</div>
+<h2 class="en" style="font-family:'EB Garamond'">Recent Posts</h2>
+<h2 class="ur-h" style="font-family:'Noto Nastaliq Urdu'">تازہ پوسٹس</h2>
+<p class="en" style="font-family:'EB Garamond'">Classic book reading feel.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ ایک کلاسک کتابی انداز ہے۔</p>
+</div>
+
+<!-- 2 -->
+<div class="card">
+<div class="title">Playfair + Gulzar</div>
+<h2 class="en" style="font-family:'Playfair Display'">Articles</h2>
+<h2 class="ur-h" style="font-family:'Gulzar'">مضامین</h2>
+<p class="en" style="font-family:'Playfair Display'">Elegant editorial style.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ ایک خوبصورت انداز ہے۔</p>
+</div>
+
+<!-- 3 -->
+<div class="card">
+<div class="title">Cormorant + Nastaliq</div>
+<h2 class="en" style="font-family:'Cormorant Garamond'">Reading</h2>
+<h2 class="ur-h" style="font-family:'Noto Nastaliq Urdu'">مطالعہ</h2>
+<p class="en" style="font-family:'Cormorant Garamond'">Soft literary feel.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ ایک نرم ادبی انداز ہے۔</p>
+</div>
+
+<!-- 4 -->
+<div class="card">
+<div class="title">Libre Baskerville + Nastaliq</div>
+<h2 class="en" style="font-family:'Libre Baskerville'">Library</h2>
+<h2 class="ur-h" style="font-family:'Noto Nastaliq Urdu'">کتب خانہ</h2>
+<p class="en" style="font-family:'Libre Baskerville'">Printed book style.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ ایک کتابی احساس دیتا ہے۔</p>
+</div>
+
+<!-- 5 -->
+<div class="card">
+<div class="title">Crimson Text + Gulzar</div>
+<h2 class="en" style="font-family:'Crimson Text'">Knowledge</h2>
+<h2 class="ur-h" style="font-family:'Gulzar'">علم</h2>
+<p class="en" style="font-family:'Crimson Text'">Scholarly tone.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ علمی انداز ہے۔</p>
+</div>
+
+<!-- 6 -->
+<div class="card">
+<div class="title">Lora + Nastaliq</div>
+<h2 class="en" style="font-family:'Lora'">Stories</h2>
+<h2 class="ur-h" style="font-family:'Noto Nastaliq Urdu'">کہانیاں</h2>
+<p class="en" style="font-family:'Lora'">Balanced reading.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ متوازن انداز ہے۔</p>
+</div>
+
+<!-- 7 -->
+<div class="card">
+<div class="title">Playfair + Nastaliq</div>
+<h2 class="en" style="font-family:'Playfair Display'">Writings</h2>
+<h2 class="ur-h" style="font-family:'Noto Nastaliq Urdu'">تحریریں</h2>
+<p class="en" style="font-family:'Playfair Display'">Luxury feel.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ پرتعیش انداز ہے۔</p>
+</div>
+
+<!-- 8 -->
+<div class="card">
+<div class="title">Garamond + Gulzar</div>
+<h2 class="en" style="font-family:'EB Garamond'">Thoughts</h2>
+<h2 class="ur-h" style="font-family:'Gulzar'">خیالات</h2>
+<p class="en" style="font-family:'EB Garamond'">Author blog feel.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ مصنفانہ انداز ہے۔</p>
+</div>
+[20-03-2026 03:29 AM] Eaz Nexora: <!-- 9 -->
+<div class="card">
+<div class="title">Cormorant + Gulzar</div>
+<h2 class="en" style="font-family:'Cormorant Garamond'">Essays</h2>
+<h2 class="ur-h" style="font-family:'Gulzar'">مضامین</h2>
+<p class="en" style="font-family:'Cormorant Garamond'">Refined reading.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ نفیس انداز ہے۔</p>
+</div>
+
+<!-- 10 -->
+<div class="card">
+<div class="title">Lora + Gulzar</div>
+<h2 class="en" style="font-family:'Lora'">Insights</h2>
+<h2 class="ur-h" style="font-family:'Gulzar'">بصیرت</h2>
+<p class="en" style="font-family:'Lora'">Modern + readable.</p>
+<p class="ur" style="font-family:'Noto Naskh Arabic'">یہ جدید اور صاف ہے۔</p>
+</div>
+
+</div>
+
+</body>
+</html>
