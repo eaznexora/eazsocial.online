@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
         observer.observe(el);
     });
 
-    // ========== TASK 7: WORKS CAROUSEL MODAL & GESTURE ENGINE (ULTIMATE FIX) ==========
+    // ========== TASK 7: WORKS CAROUSEL MODAL & GESTURE ENGINE (BULLETPROOF) ==========
     
     // 1. Define your images
     const workGalleries = {
@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 'assets/images/gym-flooring.png'
             ]
         }
-        // Add more categories matching data-work here
     };
 
     const workItems = document.querySelectorAll('.work-item');
@@ -141,33 +140,36 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentGallery = [];
     let currentIndex = 0;
 
-    // --- STRICT GESTURE VARIABLES ---
+    // --- UNIFIED POINTER STATE MACHINE ---
     let currentScale = 1;
     let translateX = 0, translateY = 0;
-    let isPointerDown = false;
-    let pointerStartX = 0, pointerStartY = 0;
-    let prevTranslateX = 0, prevTranslateY = 0;
-    let lastTapTime = 0;
     
-    // Lock states to prevent event fighting
-    let isPinching = false;
-    let activeTouches = 0;
-    let initialTouchDist = 0;
+    // Pointer Tracker
+    let evCache = [];
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let prevTx = 0, prevTy = 0;
+    
+    // Pinch Tracker
+    let initialPinchDist = -1;
     let initialPinchScale = 1;
+    let lastTapTime = 0;
 
-    // --- ZOOM FUNCTIONS & ADVANCED BOUNDARY PHYSICS ---
+    // --- ZOOM & BOUNDARY PHYSICS ---
     function setZoomTransform(scale, x, y) {
         carouselImage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     }
 
     function resetZoom() {
-        currentScale = 1; translateX = 0; translateY = 0;
-        prevTranslateX = 0; prevTranslateY = 0;
+        currentScale = 1; 
+        translateX = 0; 
+        translateY = 0;
+        prevTx = 0; 
+        prevTy = 0;
         carouselImage.style.transition = 'transform 0.3s ease';
         setZoomTransform(1, 0, 0);
     }
 
-    // PERFECT BOUNDARIES: Calculates actual visual pixels even with object-fit: contain
     function applyBoundaries() {
         let imgRatio = carouselImage.naturalWidth / carouselImage.naturalHeight;
         let containerRatio = carouselImage.offsetWidth / carouselImage.offsetHeight;
@@ -203,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setZoomTransform(currentScale, translateX, translateY);
     }
 
-    // 2. Open Modal Logic
+    // 2. Open Modal & Setup
     workItems.forEach(item => {
         item.addEventListener('click', function() {
             const workId = this.getAttribute('data-work');
@@ -266,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 3. Navigation Buttons
     nextBtn.addEventListener('click', () => {
         if (currentGallery.length > 1) {
             currentIndex = (currentIndex === currentGallery.length - 1) ? 0 : currentIndex + 1;
@@ -282,109 +283,131 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ==========================================
-    // 4. THE ISOLATED GESTURE ENGINE
+    // 4. THE UNIFIED POINTER GESTURE ENGINE
     // ==========================================
+    
+    function removeEventFromCache(e) {
+        for (let i = 0; i < evCache.length; i++) {
+            if (evCache[i].pointerId === e.pointerId) {
+                evCache.splice(i, 1);
+                break;
+            }
+        }
+    }
 
-    // --- A. TOUCH EVENTS (STRICTLY FOR PINCHING) ---
-    carouselImage.addEventListener('touchstart', (e) => {
-        activeTouches = e.touches.length;
-        if (activeTouches >= 2) {
-            isPinching = true;
-            isPointerDown = false; // Kill any active panning instantly
-            initialTouchDist = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
+    carouselImage.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        carouselImage.setPointerCapture(e.pointerId);
+        evCache.push(e);
+
+        if (evCache.length === 1) {
+            // Check Double Tap
+            let currentTime = new Date().getTime();
+            let tapLength = currentTime - lastTapTime;
+            
+            if (tapLength < 300 && tapLength > 0) {
+                if (currentScale > 1) resetZoom();
+                else {
+                    let rect = carouselImage.getBoundingClientRect();
+                    zoomToPoint(e.clientX - rect.left, e.clientY - rect.top, 2.5);
+                }
+                lastTapTime = 0;
+                return;
+            }
+            lastTapTime = currentTime;
+
+            // Start Pan
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            prevTx = translateX;
+            prevTy = translateY;
+            carouselImage.style.transition = 'none'; 
+        }
+        else if (evCache.length === 2) {
+            // Start Pinch
+            initialPinchDist = Math.hypot(
+                evCache[0].clientX - evCache[1].clientX,
+                evCache[0].clientY - evCache[1].clientY
             );
             initialPinchScale = currentScale;
             carouselImage.style.transition = 'none';
         }
-    }, { passive: false });
-
-    carouselImage.addEventListener('touchmove', (e) => {
-        if (activeTouches >= 2) {
-            e.preventDefault(); // Stop screen scrolling
-            let currentDist = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
-            currentScale = Math.max(1, Math.min(initialPinchScale * (currentDist / initialTouchDist), 4));
-
-            if (currentScale === 1) {
-                resetZoom();
-            } else {
-                applyBoundaries(); 
-                setZoomTransform(currentScale, translateX, translateY);
-            }
-        }
-    }, { passive: false });
-
-    carouselImage.addEventListener('touchend', (e) => {
-        activeTouches = e.touches.length;
-        if (activeTouches < 2) {
-            isPinching = false;
-            // CRITICAL FIX: Sync the translation state so the next pan doesn't jump
-            prevTranslateX = translateX;
-            prevTranslateY = translateY;
-        }
-    });
-
-    // --- B. POINTER EVENTS (STRICTLY FOR TAP, SWIPE, & PAN) ---
-    carouselImage.addEventListener('pointerdown', (e) => {
-        if (isPinching || activeTouches >= 2) return; // Ignore if pinching
-        e.preventDefault();
-        
-        let currentTime = new Date().getTime();
-        let tapLength = currentTime - lastTapTime;
-        
-        if (tapLength < 300 && tapLength > 0) {
-            if (currentScale > 1) resetZoom();
-            else {
-                let rect = carouselImage.getBoundingClientRect();
-                zoomToPoint(e.clientX - rect.left, e.clientY - rect.top, 2.5);
-            }
-            lastTapTime = 0; // Reset tap
-            return; // CRITICAL FIX: Stops pan from starting immediately after double tap
-        }
-        lastTapTime = currentTime;
-
-        // Start Pan
-        isPointerDown = true;
-        pointerStartX = e.clientX;
-        pointerStartY = e.clientY;
-        prevTranslateX = translateX;
-        prevTranslateY = translateY;
-        
-        carouselImage.style.transition = 'none'; 
-        carouselImage.setPointerCapture(e.pointerId);
     });
 
     carouselImage.addEventListener('pointermove', (e) => {
-        if (isPinching || activeTouches >= 2) return; // Block pan during pinch
-        if (!isPointerDown) return;
         e.preventDefault();
         
-        if (currentScale > 1) {
-            translateX = prevTranslateX + (e.clientX - pointerStartX);
-            translateY = prevTranslateY + (e.clientY - pointerStartY);
-            applyBoundaries(); 
+        // Update the event cache with the moving finger
+        for (let i = 0; i < evCache.length; i++) {
+            if (e.pointerId === evCache[i].pointerId) {
+                evCache[i] = e;
+                break;
+            }
+        }
+
+        if (evCache.length === 1 && isDragging && currentScale > 1) {
+            // Handle Single Finger Pan
+            translateX = prevTx + (e.clientX - startX);
+            translateY = prevTy + (e.clientY - startY);
+            applyBoundaries();
             setZoomTransform(currentScale, translateX, translateY);
         }
-    });
+        else if (evCache.length === 2) {
+            // Handle Two Finger Pinch
+            let currentDist = Math.hypot(
+                evCache[0].clientX - evCache[1].clientX,
+                evCache[0].clientY - evCache[1].clientY
+            );
+            
+            if (initialPinchDist > 0) {
+                currentScale = initialPinchScale * (currentDist / initialPinchDist);
+                currentScale = Math.max(1, Math.min(currentScale, 4));
 
-    carouselImage.addEventListener('pointerup', (e) => {
-        if (!isPointerDown) return;
-        isPointerDown = false;
-        carouselImage.releasePointerCapture(e.pointerId);
-
-        // Swipe Detection (Only if not zoomed)
-        if (currentScale === 1 && currentGallery.length > 1) {
-            let diffX = e.clientX - pointerStartX;
-            if (diffX > 60) prevBtn.click(); 
-            if (diffX < -60) nextBtn.click(); 
+                if (currentScale === 1) {
+                    translateX = 0;
+                    translateY = 0;
+                } else {
+                    applyBoundaries();
+                }
+                setZoomTransform(currentScale, translateX, translateY);
+            }
         }
     });
 
-    // --- C. PC MOUSE WHEEL ZOOM ---
+    function handlePointerUp(e) {
+        e.preventDefault();
+        carouselImage.releasePointerCapture(e.pointerId);
+        removeEventFromCache(e);
+
+        if (evCache.length < 2) {
+            initialPinchDist = -1; // End pinch
+        }
+        
+        if (evCache.length === 0) {
+            isDragging = false;
+            
+            // Handle Swipe Left/Right when zoomed out
+            if (currentScale === 1 && currentGallery.length > 1) {
+                let diffX = e.clientX - startX;
+                if (diffX > 60) prevBtn.click(); 
+                if (diffX < -60) nextBtn.click(); 
+            }
+        } else if (evCache.length === 1) {
+            // CRITICAL FIX: If one finger is lifted, re-anchor the drag to the remaining finger 
+            // so the image doesn't jump back to an old location!
+            startX = evCache[0].clientX;
+            startY = evCache[0].clientY;
+            prevTx = translateX;
+            prevTy = translateY;
+        }
+    }
+
+    carouselImage.addEventListener('pointerup', handlePointerUp);
+    carouselImage.addEventListener('pointercancel', handlePointerUp);
+    carouselImage.addEventListener('pointerout', handlePointerUp);
+
+    // --- PC MOUSE WHEEL ZOOM ---
     carouselImage.addEventListener('wheel', (e) => {
         e.preventDefault();
         let delta = e.deltaY < 0 ? 0.3 : -0.3;
