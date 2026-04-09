@@ -89,72 +89,72 @@
             <div class="section-line"></div>
             <div class="works-grid">
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="turf">
                     <img src="assets/images/turf-surfaces.jpeg" alt="Turf Surfaces">
                     <span>Turf Surfaces</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="gym">
                     <img src="assets/images/gym-flooring.png" alt="Gym Flooring">
                     <span>Gym Flooring</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="acrylic">
                     <img src="assets/images/acrylic-surfaces.jpg" alt="Acrylic Surfaces">
                     <span>Acrylic Surfaces</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="wooden">
                     <img src="assets/images/wooden-flooring.jpg" alt="Wooden Flooring">
                     <span>Wooden Flooring</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="fabrications">
                     <img src="assets/images/fabrications.jpeg" alt="Fabrications">
                     <span>Ground Fabrications</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="pvc">
                     <img src="assets/images/pvc-flooring.jpg" alt="PVC Flooring">
                     <span>PVC Flooring</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="sub-base">
                     <img src="assets/images/sub-base-work.jpeg" alt="Sub-Base Work">
                     <span>Sub-Base Work</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="epdm">
                     <img src="assets/images/epdm-rubber-flooring.jpeg" alt="EPDM Rubber Flooring">
                     <span>EPDM Rubber Flooring</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="court">
                     <img src="assets/images/paddle-court.jpeg" alt="Paddle Court">
                     <span>Court</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="water-proofing">
                     <img src="assets/images/water-proofing.jpg" alt="Water Proofing">
                     <span>Water Proofing</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="netting"> 
                     <img src="assets/images/netting.png" alt="Netting">
                     <span>Netting</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="interior">
                     <img src="assets/images/interior.jpeg" alt="Interior">
                     <span>Interior</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="exterior">
                     <img src="assets/images/exterior.jpeg" alt="Exterior">
                     <span>Exterior</span>
                 </div>
 
-                <div class="work-item anim-hidden">
+                <div class="work-item anim-hidden" data-work="interior2">
                     <img src="assets/images/interior2.jpeg" alt="Interior">
                     <span>Interior</span>
                 </div>
@@ -228,6 +228,25 @@
         </button>
 
     </div>
+
+    <div id="workModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <h3 id="modalTitle">Work Title</h3>
+        
+        <div class="carousel-container">
+            <button class="carousel-btn prev-btn" id="prevBtn">&#10094;</button>
+            <div class="carousel-image-wrapper">
+                <img id="carouselImage" src="" alt="Work Gallery">
+            </div>
+            <button class="carousel-btn next-btn" id="nextBtn">&#10095;</button>
+        </div>
+        
+        <div class="carousel-counter" id="carouselCounter"></div>
+        
+        <div class="thumbnail-container" id="thumbnailContainer"></div>
+    </div>
+</div>
 
     <script src="assets/js/main.js"></script>
 </body>
