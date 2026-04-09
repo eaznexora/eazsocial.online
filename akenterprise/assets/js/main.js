@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
         observer.observe(el);
     });
 
-    // ========== TASK 7: WORKS CAROUSEL MODAL & GESTURE ENGINE ==========
+    // ========== TASK 7: WORKS CAROUSEL MODAL & GESTURE ENGINE (ULTIMATE FIX) ==========
     
     // 1. Define your images
     const workGalleries = {
@@ -141,34 +141,49 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentGallery = [];
     let currentIndex = 0;
 
-    // --- GESTURE VARIABLES ---
+    // --- STRICT GESTURE VARIABLES ---
     let currentScale = 1;
     let translateX = 0, translateY = 0;
     let isPointerDown = false;
     let pointerStartX = 0, pointerStartY = 0;
     let prevTranslateX = 0, prevTranslateY = 0;
     let lastTapTime = 0;
+    
+    // Lock states to prevent event fighting
+    let isPinching = false;
+    let activeTouches = 0;
+    let initialTouchDist = 0;
+    let initialPinchScale = 1;
 
-    // --- ZOOM FUNCTIONS & BOUNDARY PHYSICS ---
+    // --- ZOOM FUNCTIONS & ADVANCED BOUNDARY PHYSICS ---
     function setZoomTransform(scale, x, y) {
         carouselImage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     }
 
     function resetZoom() {
         currentScale = 1; translateX = 0; translateY = 0;
+        prevTranslateX = 0; prevTranslateY = 0;
         carouselImage.style.transition = 'transform 0.3s ease';
         setZoomTransform(1, 0, 0);
     }
 
-    // THE FIX: Keeps the image from flying off the screen
+    // PERFECT BOUNDARIES: Calculates actual visual pixels even with object-fit: contain
     function applyBoundaries() {
-        let maxTx = (carouselImage.offsetWidth * currentScale - carouselImage.offsetWidth) / 2;
-        let maxTy = (carouselImage.offsetHeight * currentScale - carouselImage.offsetHeight) / 2;
+        let imgRatio = carouselImage.naturalWidth / carouselImage.naturalHeight;
+        let containerRatio = carouselImage.offsetWidth / carouselImage.offsetHeight;
+        
+        let actualWidth = carouselImage.offsetWidth;
+        let actualHeight = carouselImage.offsetHeight;
+
+        if (imgRatio > containerRatio) actualHeight = carouselImage.offsetWidth / imgRatio;
+        else actualWidth = carouselImage.offsetHeight * imgRatio;
+
+        let maxTx = (actualWidth * currentScale - carouselImage.offsetWidth) / 2;
+        let maxTy = (actualHeight * currentScale - carouselImage.offsetHeight) / 2;
         
         maxTx = Math.max(0, maxTx);
         maxTy = Math.max(0, maxTy);
 
-        // Clamp the translation values
         translateX = Math.max(-maxTx, Math.min(maxTx, translateX));
         translateY = Math.max(-maxTy, Math.min(maxTy, translateY));
     }
@@ -178,12 +193,11 @@ document.addEventListener('DOMContentLoaded', function () {
         let centerX = rect.width / 2;
         let centerY = rect.height / 2;
         
-        // Calculate offset to zoom where the user clicked
         translateX = (centerX - x) * (scaleTarget - 1);
         translateY = (centerY - y) * (scaleTarget - 1);
         currentScale = scaleTarget;
         
-        applyBoundaries(); // Apply boundaries after zooming
+        applyBoundaries(); 
         
         carouselImage.style.transition = 'transform 0.3s ease';
         setZoomTransform(currentScale, translateX, translateY);
@@ -267,81 +281,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // 4. THE GESTURE ENGINE (Pan, Swipe, Double Tap)
-    carouselImage.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        // Double Tap / Double Click Detection
-        let currentTime = new Date().getTime();
-        let tapLength = currentTime - lastTapTime;
-        if (tapLength < 300 && tapLength > 0) {
-            if (currentScale > 1) {
-                resetZoom();
-            } else {
-                let rect = carouselImage.getBoundingClientRect();
-                zoomToPoint(e.clientX - rect.left, e.clientY - rect.top, 2.5);
-            }
-        }
-        lastTapTime = currentTime;
+    // ==========================================
+    // 4. THE ISOLATED GESTURE ENGINE
+    // ==========================================
 
-        // Start Panning
-        isPointerDown = true;
-        pointerStartX = e.clientX;
-        pointerStartY = e.clientY;
-        prevTranslateX = translateX;
-        prevTranslateY = translateY;
-        carouselImage.style.transition = 'none'; 
-        carouselImage.setPointerCapture(e.pointerId);
-    });
-
-    carouselImage.addEventListener('pointermove', (e) => {
-        if (!isPointerDown) return;
-        e.preventDefault();
-        
-        if (currentScale > 1) {
-            // Dragging the image while zoomed in
-            translateX = prevTranslateX + (e.clientX - pointerStartX);
-            translateY = prevTranslateY + (e.clientY - pointerStartY);
-            
-            applyBoundaries(); // Locks the image inside the frame limits
-            
-            setZoomTransform(currentScale, translateX, translateY);
-        }
-    });
-
-    carouselImage.addEventListener('pointerup', (e) => {
-        isPointerDown = false;
-        carouselImage.releasePointerCapture(e.pointerId);
-
-        // Swipe Left/Right Detection (Only triggers if NOT zoomed in)
-        if (currentScale === 1 && currentGallery.length > 1) {
-            let diffX = e.clientX - pointerStartX;
-            if (diffX > 60) prevBtn.click(); 
-            if (diffX < -60) nextBtn.click(); 
-        }
-    });
-
-    // 5. PC Mouse Wheel Zoom
-    carouselImage.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        let delta = e.deltaY < 0 ? 0.3 : -0.3;
-        let newScale = Math.max(1, Math.min(currentScale + delta, 4));
-
-        if (newScale === 1) resetZoom();
-        else {
-            currentScale = newScale;
-            applyBoundaries(); // Boundary lock on wheel scroll
-            carouselImage.style.transition = 'transform 0.1s ease';
-            setZoomTransform(currentScale, translateX, translateY);
-        }
-    }, { passive: false });
-
-    // 6. Mobile Pinch-To-Zoom Logic
-    let initialTouchDist = 0;
-    let initialPinchScale = 1;
-
+    // --- A. TOUCH EVENTS (STRICTLY FOR PINCHING) ---
     carouselImage.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) {
-            isPointerDown = false; 
+        activeTouches = e.touches.length;
+        if (activeTouches >= 2) {
+            isPinching = true;
+            isPointerDown = false; // Kill any active panning instantly
             initialTouchDist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
@@ -352,23 +301,105 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: false });
 
     carouselImage.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2) {
-            e.preventDefault(); 
+        if (activeTouches >= 2) {
+            e.preventDefault(); // Stop screen scrolling
             let currentDist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
             );
             currentScale = Math.max(1, Math.min(initialPinchScale * (currentDist / initialTouchDist), 4));
 
-            if (currentScale === 1) resetZoom();
-            else {
-                applyBoundaries(); // Boundary lock on pinch
+            if (currentScale === 1) {
+                resetZoom();
+            } else {
+                applyBoundaries(); 
                 setZoomTransform(currentScale, translateX, translateY);
             }
         }
     }, { passive: false });
 
-    // 7. Close Modal Logic
+    carouselImage.addEventListener('touchend', (e) => {
+        activeTouches = e.touches.length;
+        if (activeTouches < 2) {
+            isPinching = false;
+            // CRITICAL FIX: Sync the translation state so the next pan doesn't jump
+            prevTranslateX = translateX;
+            prevTranslateY = translateY;
+        }
+    });
+
+    // --- B. POINTER EVENTS (STRICTLY FOR TAP, SWIPE, & PAN) ---
+    carouselImage.addEventListener('pointerdown', (e) => {
+        if (isPinching || activeTouches >= 2) return; // Ignore if pinching
+        e.preventDefault();
+        
+        let currentTime = new Date().getTime();
+        let tapLength = currentTime - lastTapTime;
+        
+        if (tapLength < 300 && tapLength > 0) {
+            if (currentScale > 1) resetZoom();
+            else {
+                let rect = carouselImage.getBoundingClientRect();
+                zoomToPoint(e.clientX - rect.left, e.clientY - rect.top, 2.5);
+            }
+            lastTapTime = 0; // Reset tap
+            return; // CRITICAL FIX: Stops pan from starting immediately after double tap
+        }
+        lastTapTime = currentTime;
+
+        // Start Pan
+        isPointerDown = true;
+        pointerStartX = e.clientX;
+        pointerStartY = e.clientY;
+        prevTranslateX = translateX;
+        prevTranslateY = translateY;
+        
+        carouselImage.style.transition = 'none'; 
+        carouselImage.setPointerCapture(e.pointerId);
+    });
+
+    carouselImage.addEventListener('pointermove', (e) => {
+        if (isPinching || activeTouches >= 2) return; // Block pan during pinch
+        if (!isPointerDown) return;
+        e.preventDefault();
+        
+        if (currentScale > 1) {
+            translateX = prevTranslateX + (e.clientX - pointerStartX);
+            translateY = prevTranslateY + (e.clientY - pointerStartY);
+            applyBoundaries(); 
+            setZoomTransform(currentScale, translateX, translateY);
+        }
+    });
+
+    carouselImage.addEventListener('pointerup', (e) => {
+        if (!isPointerDown) return;
+        isPointerDown = false;
+        carouselImage.releasePointerCapture(e.pointerId);
+
+        // Swipe Detection (Only if not zoomed)
+        if (currentScale === 1 && currentGallery.length > 1) {
+            let diffX = e.clientX - pointerStartX;
+            if (diffX > 60) prevBtn.click(); 
+            if (diffX < -60) nextBtn.click(); 
+        }
+    });
+
+    // --- C. PC MOUSE WHEEL ZOOM ---
+    carouselImage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        let delta = e.deltaY < 0 ? 0.3 : -0.3;
+        let newScale = Math.max(1, Math.min(currentScale + delta, 4));
+
+        if (newScale === 1) resetZoom();
+        else {
+            currentScale = newScale;
+            applyBoundaries(); 
+            carouselImage.style.transition = 'transform 0.1s ease';
+            setZoomTransform(currentScale, translateX, translateY);
+        }
+    }, { passive: false });
+
+    // 5. Close Modal Logic
     function closeModalAction() {
         modal.classList.remove('show');
         setTimeout(resetZoom, 300); 
