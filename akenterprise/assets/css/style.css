@@ -762,30 +762,24 @@ body {
   justify-content: center;
 }
 
-/* 3. Zoom Functionality Styling */
+/* --- UPDATED IMAGE GESTURE STYLES --- */
 #carouselImage {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   border-radius: 8px;
-  transition: all 0.3s ease;
-  cursor: zoom-in;
+  cursor: grab;
+  /* CRITICAL: Stops mobile pull-to-refresh & page scroll while pinching/swiping */
+  touch-action: none; 
+  user-select: none;
+  -webkit-user-drag: none; 
+  transition: transform 0.3s ease;
+  transform-origin: center center;
+  will-change: transform;
 }
 
-/* When image is double clicked */
-#carouselImage.zoomed {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(1.3); /* Centers and zooms */
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  max-height: none;
-  z-index: 2000;
-  background-color: #000;
-  cursor: zoom-out;
-  border-radius: 0;
+#carouselImage:active {
+  cursor: grabbing;
 }
 
 .carousel-btn {
