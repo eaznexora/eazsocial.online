@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let prevTranslateX = 0, prevTranslateY = 0;
     let lastTapTime = 0;
 
-    // --- ZOOM FUNCTIONS ---
+    // --- ZOOM FUNCTIONS & BOUNDARY PHYSICS ---
     function setZoomTransform(scale, x, y) {
         carouselImage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     }
@@ -160,20 +160,36 @@ document.addEventListener('DOMContentLoaded', function () {
         setZoomTransform(1, 0, 0);
     }
 
+    // THE FIX: Keeps the image from flying off the screen
+    function applyBoundaries() {
+        let maxTx = (carouselImage.offsetWidth * currentScale - carouselImage.offsetWidth) / 2;
+        let maxTy = (carouselImage.offsetHeight * currentScale - carouselImage.offsetHeight) / 2;
+        
+        maxTx = Math.max(0, maxTx);
+        maxTy = Math.max(0, maxTy);
+
+        // Clamp the translation values
+        translateX = Math.max(-maxTx, Math.min(maxTx, translateX));
+        translateY = Math.max(-maxTy, Math.min(maxTy, translateY));
+    }
+
     function zoomToPoint(x, y, scaleTarget) {
         let rect = carouselImage.getBoundingClientRect();
         let centerX = rect.width / 2;
         let centerY = rect.height / 2;
-        // Calculate offset to zoom precisely where the user clicked
+        
+        // Calculate offset to zoom where the user clicked
         translateX = (centerX - x) * (scaleTarget - 1);
         translateY = (centerY - y) * (scaleTarget - 1);
         currentScale = scaleTarget;
+        
+        applyBoundaries(); // Apply boundaries after zooming
         
         carouselImage.style.transition = 'transform 0.3s ease';
         setZoomTransform(currentScale, translateX, translateY);
     }
 
-    // 2. Open Modal Logic (Includes Single Image Fix)
+    // 2. Open Modal Logic
     workItems.forEach(item => {
         item.addEventListener('click', function() {
             const workId = this.getAttribute('data-work');
@@ -217,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateCarousel() {
         carouselImage.src = currentGallery[currentIndex];
-        resetZoom(); // Reset zoom every time image changes
+        resetZoom(); 
         
         if(currentGallery.length <= 1) {
             carouselCounter.style.display = 'none';
@@ -267,13 +283,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         lastTapTime = currentTime;
 
-        // Start Panning / Swiping
+        // Start Panning
         isPointerDown = true;
         pointerStartX = e.clientX;
         pointerStartY = e.clientY;
         prevTranslateX = translateX;
         prevTranslateY = translateY;
-        carouselImage.style.transition = 'none'; // Instant drag feeling
+        carouselImage.style.transition = 'none'; 
         carouselImage.setPointerCapture(e.pointerId);
     });
 
@@ -285,6 +301,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // Dragging the image while zoomed in
             translateX = prevTranslateX + (e.clientX - pointerStartX);
             translateY = prevTranslateY + (e.clientY - pointerStartY);
+            
+            applyBoundaries(); // Locks the image inside the frame limits
+            
             setZoomTransform(currentScale, translateX, translateY);
         }
     });
@@ -296,8 +315,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Swipe Left/Right Detection (Only triggers if NOT zoomed in)
         if (currentScale === 1 && currentGallery.length > 1) {
             let diffX = e.clientX - pointerStartX;
-            if (diffX > 60) prevBtn.click(); // Swiped right
-            if (diffX < -60) nextBtn.click(); // Swiped left
+            if (diffX > 60) prevBtn.click(); 
+            if (diffX < -60) nextBtn.click(); 
         }
     });
 
@@ -310,6 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (newScale === 1) resetZoom();
         else {
             currentScale = newScale;
+            applyBoundaries(); // Boundary lock on wheel scroll
             carouselImage.style.transition = 'transform 0.1s ease';
             setZoomTransform(currentScale, translateX, translateY);
         }
@@ -321,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     carouselImage.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
-            isPointerDown = false; // Cancel pan if pinching
+            isPointerDown = false; 
             initialTouchDist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
@@ -333,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     carouselImage.addEventListener('touchmove', (e) => {
         if (e.touches.length === 2) {
-            e.preventDefault(); // Stop page scrolling
+            e.preventDefault(); 
             let currentDist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
@@ -341,14 +361,17 @@ document.addEventListener('DOMContentLoaded', function () {
             currentScale = Math.max(1, Math.min(initialPinchScale * (currentDist / initialTouchDist), 4));
 
             if (currentScale === 1) resetZoom();
-            else setZoomTransform(currentScale, translateX, translateY);
+            else {
+                applyBoundaries(); // Boundary lock on pinch
+                setZoomTransform(currentScale, translateX, translateY);
+            }
         }
     }, { passive: false });
 
     // 7. Close Modal Logic
     function closeModalAction() {
         modal.classList.remove('show');
-        setTimeout(resetZoom, 300); // Wait for fade out to reset
+        setTimeout(resetZoom, 300); 
     }
 
     closeModal.addEventListener('click', closeModalAction);
