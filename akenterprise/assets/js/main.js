@@ -108,9 +108,9 @@ document.addEventListener('DOMContentLoaded', function () {
         observer.observe(el);
     });
 
-    // ========== TASK 7: WORKS CAROUSEL MODAL (UPDATED) ==========
+    // ========== TASK 7: WORKS CAROUSEL MODAL & GESTURE ENGINE ==========
     
-    // 1. Define your images for each work category
+    // 1. Define your images
     const workGalleries = {
         'turf': {
             title: 'Turf Surfaces',
@@ -125,10 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 'assets/images/gym-flooring.png'
             ]
         }
-        // Add other categories matching your data-work attributes
+        // Add more categories matching data-work here
     };
 
-    // 2. Select modal elements
     const workItems = document.querySelectorAll('.work-item');
     const modal = document.getElementById('workModal');
     const closeModal = document.getElementById('closeModal');
@@ -137,49 +136,73 @@ document.addEventListener('DOMContentLoaded', function () {
     const carouselCounter = document.getElementById('carouselCounter');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const thumbnailContainer = document.getElementById('thumbnailContainer'); // NEW
+    const thumbnailContainer = document.getElementById('thumbnailContainer');
 
     let currentGallery = [];
     let currentIndex = 0;
 
-    // 3. Open Modal on Work Item Click
+    // --- GESTURE VARIABLES ---
+    let currentScale = 1;
+    let translateX = 0, translateY = 0;
+    let isPointerDown = false;
+    let pointerStartX = 0, pointerStartY = 0;
+    let prevTranslateX = 0, prevTranslateY = 0;
+    let lastTapTime = 0;
+
+    // --- ZOOM FUNCTIONS ---
+    function setZoomTransform(scale, x, y) {
+        carouselImage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+    }
+
+    function resetZoom() {
+        currentScale = 1; translateX = 0; translateY = 0;
+        carouselImage.style.transition = 'transform 0.3s ease';
+        setZoomTransform(1, 0, 0);
+    }
+
+    function zoomToPoint(x, y, scaleTarget) {
+        let rect = carouselImage.getBoundingClientRect();
+        let centerX = rect.width / 2;
+        let centerY = rect.height / 2;
+        // Calculate offset to zoom precisely where the user clicked
+        translateX = (centerX - x) * (scaleTarget - 1);
+        translateY = (centerY - y) * (scaleTarget - 1);
+        currentScale = scaleTarget;
+        
+        carouselImage.style.transition = 'transform 0.3s ease';
+        setZoomTransform(currentScale, translateX, translateY);
+    }
+
+    // 2. Open Modal Logic (Includes Single Image Fix)
     workItems.forEach(item => {
         item.addEventListener('click', function() {
             const workId = this.getAttribute('data-work');
             
-            // 4. FIX GLITCH: Clean reset of gallery
             if (!workGalleries[workId] || !workGalleries[workId].images || workGalleries[workId].images.length === 0) {
-                // If single image (no gallery defined)
                 const imgSource = this.querySelector('img').src;
                 const titleText = this.querySelector('span').innerText;
                 currentGallery = [imgSource]; 
                 modalTitle.innerText = titleText;
             } else {
-                // If gallery exists
                 currentGallery = workGalleries[workId].images;
                 modalTitle.innerText = workGalleries[workId].title;
             }
 
             currentIndex = 0;
-            carouselImage.classList.remove('zoomed'); // Reset zoom
-            setupThumbnails(); // Generate thumbnails
+            setupThumbnails();
             updateCarousel();
             modal.classList.add('show');
         });
     });
 
-    // Generate Thumbnails
     function setupThumbnails() {
-        thumbnailContainer.innerHTML = ''; // Clear old thumbnails
-        
+        thumbnailContainer.innerHTML = '';
         if (currentGallery.length > 1) {
             currentGallery.forEach((src, index) => {
                 const img = document.createElement('img');
                 img.src = src;
                 img.classList.add('thumb-img');
                 if (index === 0) img.classList.add('active');
-                
-                // Click thumbnail to go to image
                 img.addEventListener('click', () => {
                     currentIndex = index;
                     updateCarousel();
@@ -188,16 +211,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             thumbnailContainer.style.display = 'flex';
         } else {
-            thumbnailContainer.style.display = 'none'; // Hide if only 1 image
+            thumbnailContainer.style.display = 'none';
         }
     }
 
-    // Update Image, Counter, and active Thumbnail
     function updateCarousel() {
         carouselImage.src = currentGallery[currentIndex];
-        carouselImage.classList.remove('zoomed'); // reset zoom on image change
+        resetZoom(); // Reset zoom every time image changes
         
-        // Hide arrows & counter if only 1 image exists
         if(currentGallery.length <= 1) {
             carouselCounter.style.display = 'none';
             prevBtn.style.display = 'none';
@@ -208,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function () {
             prevBtn.style.display = 'flex';
             nextBtn.style.display = 'flex';
             
-            // Highlight correct thumbnail
             const thumbs = document.querySelectorAll('.thumb-img');
             thumbs.forEach((thumb, idx) => {
                 thumb.classList.toggle('active', idx === currentIndex);
@@ -216,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 5. Next & Prev Navigation
+    // 3. Navigation Buttons
     nextBtn.addEventListener('click', () => {
         if (currentGallery.length > 1) {
             currentIndex = (currentIndex === currentGallery.length - 1) ? 0 : currentIndex + 1;
@@ -231,30 +251,109 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // 6. Double Tap / Double Click to Zoom Functionality
-    let lastTap = 0;
-    carouselImage.addEventListener('click', function(e) {
-        const currentTime = new Date().getTime();
-        const tapLength = currentTime - lastTap;
+    // 4. THE GESTURE ENGINE (Pan, Swipe, Double Tap)
+    carouselImage.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        // Double Tap / Double Click Detection
+        let currentTime = new Date().getTime();
+        let tapLength = currentTime - lastTapTime;
+        if (tapLength < 300 && tapLength > 0) {
+            if (currentScale > 1) {
+                resetZoom();
+            } else {
+                let rect = carouselImage.getBoundingClientRect();
+                zoomToPoint(e.clientX - rect.left, e.clientY - rect.top, 2.5);
+            }
+        }
+        lastTapTime = currentTime;
+
+        // Start Panning / Swiping
+        isPointerDown = true;
+        pointerStartX = e.clientX;
+        pointerStartY = e.clientY;
+        prevTranslateX = translateX;
+        prevTranslateY = translateY;
+        carouselImage.style.transition = 'none'; // Instant drag feeling
+        carouselImage.setPointerCapture(e.pointerId);
+    });
+
+    carouselImage.addEventListener('pointermove', (e) => {
+        if (!isPointerDown) return;
+        e.preventDefault();
         
-        if (tapLength < 300 && tapLength > 0) { // Double tap detected
-            this.classList.toggle('zoomed');
-            e.preventDefault();
+        if (currentScale > 1) {
+            // Dragging the image while zoomed in
+            translateX = prevTranslateX + (e.clientX - pointerStartX);
+            translateY = prevTranslateY + (e.clientY - pointerStartY);
+            setZoomTransform(currentScale, translateX, translateY);
         }
-        lastTap = currentTime;
     });
 
-    // Close Modal functionality
-    closeModal.addEventListener('click', () => {
+    carouselImage.addEventListener('pointerup', (e) => {
+        isPointerDown = false;
+        carouselImage.releasePointerCapture(e.pointerId);
+
+        // Swipe Left/Right Detection (Only triggers if NOT zoomed in)
+        if (currentScale === 1 && currentGallery.length > 1) {
+            let diffX = e.clientX - pointerStartX;
+            if (diffX > 60) prevBtn.click(); // Swiped right
+            if (diffX < -60) nextBtn.click(); // Swiped left
+        }
+    });
+
+    // 5. PC Mouse Wheel Zoom
+    carouselImage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        let delta = e.deltaY < 0 ? 0.3 : -0.3;
+        let newScale = Math.max(1, Math.min(currentScale + delta, 4));
+
+        if (newScale === 1) resetZoom();
+        else {
+            currentScale = newScale;
+            carouselImage.style.transition = 'transform 0.1s ease';
+            setZoomTransform(currentScale, translateX, translateY);
+        }
+    }, { passive: false });
+
+    // 6. Mobile Pinch-To-Zoom Logic
+    let initialTouchDist = 0;
+    let initialPinchScale = 1;
+
+    carouselImage.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            isPointerDown = false; // Cancel pan if pinching
+            initialTouchDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            initialPinchScale = currentScale;
+            carouselImage.style.transition = 'none';
+        }
+    }, { passive: false });
+
+    carouselImage.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault(); // Stop page scrolling
+            let currentDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            currentScale = Math.max(1, Math.min(initialPinchScale * (currentDist / initialTouchDist), 4));
+
+            if (currentScale === 1) resetZoom();
+            else setZoomTransform(currentScale, translateX, translateY);
+        }
+    }, { passive: false });
+
+    // 7. Close Modal Logic
+    function closeModalAction() {
         modal.classList.remove('show');
-        carouselImage.classList.remove('zoomed');
-    });
+        setTimeout(resetZoom, 300); // Wait for fade out to reset
+    }
 
+    closeModal.addEventListener('click', closeModalAction);
     window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('show');
-            carouselImage.classList.remove('zoomed');
-        }
+        if (e.target === modal) closeModalAction();
     });
 
 });
